@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Profile</title>
+    <!-- Bootstrap CSS -->
+
+    <link href="style/bootstrap.min.css" rel="stylesheet">
+    <script src="js/jquery-1.8.2.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <style>
+        #dialog-box {
+            width: 1000px;
+            height: 600px;
+            background-color: white;
+            position: absolute;
+            left: 20%;
+            top: 15%;
+            box-shadow: 0px 0px 5px 5px gray;
+            padding: 10px;
+            align-items: center;
+        }
+
+        .title {
+            background-image: url(pics/background9.jpg);
+            background-size: cover;
+            background-repeat: no-repeat;
+            width: 100vw;
+            height: 100vh;
+        }
+    </style>
+    <script>
+        $(document).ready(function () {
+
+        })
+        function loadFile(ref) {
+            var image = document.getElementById("image");
+            image.src = window.URL.createObjectURL(ref.files[0]);
+
+        };
+
+        function fetch() {
+            if (localStorage.getItem('access') != "Client") {
+                window.location.replace("/");
+            }
+            $("#email").val(localStorage.getItem('email'));
+            var email = $('#email').val();
+            $.ajax({
+                method: 'post',
+                url: '/profile-client-fetch',
+                data: JSON.stringify({ email: email }),
+                contentType: 'application/json',
+                success: function (data) {
+                    var temp = "uploads/" + data.pic;
+                    $("#image").attr("src", temp);
+                    $("#uname").val(data.name);
+                    $("#contact").val(data.contact);
+                    $("#address").val(data.address);
+                    $("#City").val(data.city);
+                    $("#hdn").val(data.uploadid);
+                }
+
+            });
+        };
+    </script>
+</head>
+
+<body onload="fetch();">
+    <div class="title">
+        <nav class="navbar navbar-light bg-light fixed-top">
+            <a class="navbar-brand" href="index.html">
+                <img src="pics/events.jpg" class="rounded float-left border border-dark" style="margin-left: 10px;"
+                    width="40" height="30" alt="">
+                EventPlanz-VendorPanel
+            </a>
+        </nav>
+        <form method="post" enctype="multipart/form-data">
+            <input type="hidden" id="hdn" name="hdn">
+            <div class="container dialog-box" id="dialog-box">
+                <a href="dash-client.html" class="btn btn-primary">Back</a>
+                <center>
+                    <span id="title">
+                        <h3><b>Profile Information</b></h3>
+                    </span>
+                </center>
+
+
+                <div id="cross" name="crossN"></div>
+                <!-- <br>
+                    <img src="pics/userlogin.png" id = "image" class="rounded mx-auto d-block" style="width: 100px; height: 100px;">
+                    <br>
+                    -->
+
+                <!-- <center>
+                
+                        <div><label class="custom-file-label">Upload Profile Pic:</label></div>
+                        <div><input type="file" name="ppic" class = "custom-file-input" id = "pic" onchange="loadFile(this);"></div>
+                    -->
+                </center>
+
+                <br>
+                <div class="row">
+                    <div class="col">
+                        <img src="pics/userlogin.png" id="image" class="rounded mx-auto d-block border border-secondary"
+                            style="width: 100px; height: 100px; margin-top: -10px;"> <br>
+                    </div>
+                </div>
+                <br><br><br>
+                <div class="row" style="margin-top: -70px;">
+                    <div class="col">
+                        <label class="form-label"><b>Email*:</b></label>
+                        <div class="input-group">
+                            <input name="email" id="email" type="text" required class="form-control"
+                                placeholder="Enter your email" aria-label="Recipient's username"
+                                aria-describedby="basic-addon2" readonly>
+                            <span class="input-group-text" id="basic-addon2">@gmail.com </span>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <label class="form-label"><b>Upload Pic:</b></label>
+                        <div class="input-group">
+                            <input type="file" class="form-control" id="picpaths" name="picpath"
+                                onchange="loadFile(this);">
+                            <label class="input-group-text" for="inputGroupFile02">Upload</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+
+                    <div class="col">
+                        <label class="form-label"><b>Name*:</b></label>
+                        <div>
+                            <div><input type="text" placeholder="Enter your name" class="form-control" maxlength="20"
+                                    name="uname" id="uname" required></div>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <label class="form-label"><b>Contact Number:</b></label>
+                        <div>
+                            <div><input type="number" placeholder="Enter your Contact Number" class="form-control"
+                                    maxlength="10" name="contact" id="contact"></div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col">
+                        <label class="form-label"><b>Address:</b></label>
+                        <div><input type="text" placeholder="Enter your address" class="form-control" maxlength="100"
+                                name="address" id="address"></div>
+                    </div>
+                    <div class="col">
+                        <label class="form-label"><b>City:</b></label>
+                        <div><input type="text" id="City" placeholder="Enter your city" class="form-control"
+                                maxlength="100" name="city">
+                        </div>
+                    </div>
+                </div>
+                <center>
+                    <div class="row mt-4">
+                        <div class="col">
+                            <div class="btn-group" role="group" aria-label="Basic example">
+                                <button type="submit" class="btn btn-primary" value="update" id="upd"
+                                    formaction="/profile-client-update">Update</button>
+                            </div>
+                        </div>
+                    </div>
+                </center>
+            </div>
+        </form>
+    </div>
+</body>
+
+</html>

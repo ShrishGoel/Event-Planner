@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="style/bootstrap.min.css" rel="stylesheet">
+    <script src="js/jquery-1.8.2.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <title>Your Profile</title>
+    <style>
+        #dialog-box {
+            width: 1100px;
+            height: 850px;
+            background-color: white;
+            position: absolute;
+            left: 20%;
+            top: 10%;
+            box-shadow: 0px 0px 5px 5px gray;
+            padding: 10px;
+            align-items: center;
+        }
+
+        .title {
+            background-image: url(pics/background9.jpg);
+            background-size: cover;
+            background-repeat: no-repeat;
+            width: 100vw;
+            height: 100vh;
+        }
+    </style>
+    <script>
+        $(document).ready(function () {
+        });
+        function loadFile(ref) {
+            var image = document.getElementById("image");
+            image.src = window.URL.createObjectURL(ref.files[0]);
+        }
+
+        function doImplement(ref) {
+            var des = document.querySelector("#selser");
+            for (var i = 0; i < ref.length; i++) {
+
+                if (ref[i].selected) {
+                    if (ref[i].value == "Select") {
+                        return;
+                    }
+                    if (des.value.length == 0) {
+                        des.value += ref[i].value;
+                    }
+                    else {
+                        des.value += ("," + ref[i].value);
+                    }
+                }
+            }
+
+        };
+
+        function doReset() {
+            var temp = document.getElementById("selser");
+            temp.value = "";
+        };
+
+        function doFetch() {
+            if (localStorage.getItem('access') != "Vendor") {
+                window.location.replace("/");
+            }
+            $("#email").val(localStorage.getItem('email'));
+            var email = $('#email').val();
+            $.ajax({
+                method: 'post',
+                url: '/profile-vendor-fetch',
+                data: JSON.stringify({ email: email }),
+                contentType: 'application/json',
+                success: function (data) {
+                    var temp = "ids/" + data.uploadid;
+                    $("#name").val(data.name);
+                    $("#image").attr("src", temp);
+                    $("#firm").val(data.firm);
+                    $("#estd").val(data.estd);
+                    $("#contact").val(data.phone);
+                    $("#city").val(data.City);
+                    $("#selser").val(data.service);
+                    $("#other").val(data.other);
+                    $("#hdn").val(data.uploadid);
+                }
+
+            });
+        };
+
+    </script>
+</head>
+
+<body onload="doFetch();">
+    <nav class="navbar navbar-light bg-light fixed-top">
+        <a class="navbar-brand" href="index.html">
+            <img src="pics/events.jpg" class="rounded float-left border border-dark" style="margin-left: 10px;"
+                width="40" height="30" alt="">
+            EventPlanz-VendorPanel
+        </a>
+    </nav>
+    <div class="title">
+        <form method="post" enctype="multipart/form-data">
+            <input type="hidden" id="hdn" name="hdn">
+            <div class="container dialog-box" id="dialog-box">
+                <a href="dash-vendor.html" class="btn btn-primary">Back</a>
+                <center>
+                    <div id="title">
+                        <h3><b>Profile Information</b></h3>
+                    </div>
+                </center>
+
+                <div class="row mt-4">
+                    <div class="col" style="margin-top: -20px;">
+                        <img src="pics/userlogin.png" id="image"
+                            class="rounded mx-auto d-block border border-secondary mt-1"
+                            style="width: 150px; height: 150px; margin-top: -92px;">
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col">
+                        <label class="form-label"><b>Name*:</b></label>
+                        <div><input type="text" placeholder="Enter your name" class="form-control" maxlength="20"
+                                name="name" id="name" required></div>
+                    </div>
+                    <div class="col">
+
+                        <label class="form-label"><b>Upload ID:</b></label>
+                        <div class="input-group">
+                            <input type="file" class="form-control" id="picpaths" name="picpath"
+                                onchange="loadFile(this);">
+                            <label class="input-group-text" for="inputGroupFile02">Upload</label>
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col">
+                            <label class="form-label"><b>Firm:</b></label>
+                            <div><input type="text" placeholder="Enter your Firm name" class="form-control"
+                                    maxlength="40" name="firm" id="firm"></div>
+                        </div>
+                        <div class="col">
+                            <label class="form-label"><b>ESTD:</b></label>
+                            <div><input type="text" placeholder="Enter your ESTD" class="form-control" maxlength="40"
+                                    name="estd" id="estd"></div>
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+
+                        <div class="col">
+                            <label class="form-label"><b>Contact Number*:</b></label>
+                            <div><input type="text" placeholder="Enter your contact number" class="form-control"
+                                    maxlength="10" name="contact" id="contact" required></div>
+                        </div>
+
+                        <div class="col">
+                            <label class="form-label"><b>Email*:</b></label>
+                            <div class="input-group">
+                                <input name="email" id="email" type="text" required class="form-control"
+                                    placeholder="Enter your email" aria-label="Recipient's username"
+                                    aria-describedby="basic-addon2" readonly>
+                                <span class="input-group-text" id="basic-addon2">@gmail.com </span>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <label class="form-label"><b>City:</b></label>
+                            <br>
+                            <input type="text" class="form-control" maxlength="40" name="city" id="city"
+                                placeholder="Enter your city">
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="exampleFormControlSelect1"><b>Services:</b></label>
+                            <select class="form-control" id="exampleFormControlSelect1" onchange="doImplement(this);">
+                                <option value="Select" selected>Select</option>
+                                <option value="Decorations Supplier">Decorations Supplier</option>
+                                <option value="Cake Supplier">Cake Supplier</option>
+                                <option value="Decorator">Decorator</option>
+                                <option value="Make-Up">Make-Up</option>
+                                <option value="Parlor">Parlor</option>
+                                <option value="Cook">Cook</option>
+                                <option value="Planner">Planner</option>
+                                <option value="Music Player">Music Player</option>
+                                <option value="Cake Designer">Cake Designer</option>
+                                <option value="Furniture Supplier">Furniture Supplier</option>
+                                <option value="Waiter">Waiter</option>
+                                <option value="Cleaner">Cleaner</option>
+                                <option value="Cake Server">Cake Server</option>
+                                <option value="Drinks">Drinks</option>
+                                <option value="Photographer">Photographer</option>
+                                <option value="Designer">Designer</option>
+                                <option value="Clown">Clown</option>
+                                <option value="Entertainer">Entertainer</option>
+                                <option value="Party Admitter">Party Admitter</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col" style="margin-top: -10px;">
+                        <label class="form-label"><b>Selected Services:</b></label>
+                        <br>
+                        <input type="text" class="form-control" maxlength="40" name="selser" id="selser" readonly>
+                    </div>
+
+                    <div class="col">
+                        <input type="button" class="btn btn-primary" value="Reset" onclick="doReset();"
+                            style="margin-top: 22px;">
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <form class="was-validated">
+                        <div class="mb-3">
+                            <label for="validationTextarea"><b>Other Info:</b></label>
+                            <textarea class="form-control mt-1" id="other" name="other"
+                                placeholder="Enter other info like prices etc."></textarea>
+                        </div>
+                </div>
+
+                <center>
+
+                    <div class="row mt-4">
+                        <div class="col">
+                            <div class="btn-group" role="group" aria-label="Basic example">
+                                <button type="submit" class="btn btn-primary" value="update"
+                                    formaction="/profile-vendor-update" id="upd">Update</button>
+                            </div>
+                        </div>
+                    </div>
+                </center>
+            </div>
+        </form>
+    </div>
+</body>
+
+</body>
+
+</html>

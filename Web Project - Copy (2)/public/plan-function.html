@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plan A Event</title>
+    <link href="style/bootstrap.min.css" rel="stylesheet">
+    <script src="js/jquery-1.8.2.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/angular.min.js"></script>
+
+    <style>
+        .title {
+            background-image: url(pics/background8.jpg);
+            background-size: cover;
+            background-repeat: no-repeat;
+            width: 100vw;
+            height: 100vh;
+        }
+    </style>
+    <script>
+        $(document).ready(function () {
+            $("#deleete").click(function () {
+                $("#detailsModal").modal('hide');
+            });
+
+            $("#show").click(function () {
+                $.ajax({
+                    method: 'post',
+                    url: '/fetch-event-data',
+                    data: JSON.stringify({}),
+                    contentType: 'application/json',
+                    success: function (data) {
+                        var arr = new Set;
+                        var arr1 = new Set;
+                        $("#service").find('option').remove().end();
+                        $("#city").find('option').remove().end();
+                        for (var x = 0; x < data.length; x++) {
+                            var temp = data[x].service.split(",");
+                            for (var y = 0; y < temp.length; y++) {
+                                arr.add(temp[y]);
+                            }
+                            var temp = data[x].City.split(",");
+                            for (var y = 0; y < temp.length; y++) {
+                                arr1.add(temp[y]);
+                            }
+                        };
+
+                        for (let i of arr) {
+                            var opt = document.createElement("option");
+                            opt.textContent = i;
+                            opt.value = i;
+                            $("#service").append(opt);
+                        };
+
+                        for (let i of arr1) {
+                            var opt = document.createElement("option");
+                            opt.textContent = i;
+                            opt.value = i;
+                            $("#city").append(opt);
+                        };
+
+                    }
+
+
+                })
+            });
+
+            $("#fetc").click(function () {
+                $('#planaevent').modal('hide');
+            });
+
+        });
+        var module = angular.module("modmod", []);
+        module.controller("mod", function ($scope, $http) {
+
+            $scope.jsonArray = [];
+
+
+            $scope.doFetchAll = function () {
+                var city = (document.getElementById("city"));
+                var city_selected;
+                for (var i = 0; i < city.length; i++) {
+                    if (city[i].selected == true) {
+                        city_selected = city[i].value;
+                    }
+                }
+                var service = document.getElementById("service");
+                var service_selected;
+                for (var i = 0; i < service.length; i++) {
+                    if (service[i].selected == true) {
+                        service_selected = service[i].value;
+                    }
+                }
+                var data = { city: city_selected, service: service_selected };
+                $http({
+                    url: "/fetch-clients-event",
+                    method: "POST",
+                    params: data
+                }).then(fxOk, fxNotOk);
+
+                function fxOk(response) {
+                    $scope.jsonArray = response.data;
+                }
+
+                function fxNotOk(response) {
+                    alert("An error occurred.");
+                }
+
+            }
+
+            $scope.showFullDetails = function (index) {
+                $scope.index = index;
+            };
+        });
+        function check() {
+            if (localStorage.getItem('access') != "Client") {
+                window.location.replace("index.html");
+            }
+        };
+    </script>
+</head>
+
+<body ng-app="modmod" ng-controller="mod" class="title" onload="check();">
+    <nav class="navbar navbar-light bg-light fixed-top">
+        <a class="navbar-brand" href="index.html">
+            <img src="pics/events.jpg" class="rounded float-left border border-dark" style="margin-left: 10px;"
+                width="40" height="30" alt="">
+            EventPlanz-ClientPanel
+        </a>
+    </nav>
+    <center>
+        <button type="button" class="btn btn-primary" style="margin-top: 80px;" id="show" data-bs-toggle="modal"
+            data-bs-target="#planaevent">Plan A Event</button>
+        <a href="dash-client.html" class="btn btn-primary" style="margin-top: 80px;">Back</a>
+    </center>
+
+    <!-- Modal -->
+    <div class="modal fade" id="planaevent" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Plan A Event</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col">
+                                <label class="form-label">Select City:</label>
+                                <select class="form-control" id="city" name="city"></select>
+                            </div>
+                        </div>
+                        <div class="row mt-4">
+                            <div class="col">
+                                <label class="form-label">Select Service:</label>
+                                <select class="form-control" id="service" name="service"></select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="fetc" ng-click="doFetchAll();">Fetch</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col md-3" ng-repeat="obj in jsonArray">
+                <div class="card" style="width: 250px; height: 340px;">
+                    <div class="card-body">
+                        <h5 class="card-title"><b>{{$index}}</b></h5>
+                        <p class="card-text"><b>Userid: </b>{{obj.userid}}</p>
+                        <p class="card-text"><b>Name: </b>{{obj.name}}</p>
+                        <p class="card-text"><b>Email: </b>{{obj.email}}@gmail.com</p>
+                        <p class="card-text"><b>Phone: </b>{{obj.phone}}</p>
+                        <p class="card-text"><b>Service:</b>{{obj.service}}</p>
+                        <a href="#" class="btn btn-primary" ng-click="showFullDetails($index);" data-bs-toggle="modal"
+                            data-bs-target="#detailsModal">Show Details</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">More Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div><b>Index: </b>{{$index}}</div>
+                    <div><b>Userid: </b>{{jsonArray[index].userid}}</div>
+                    <div><b>Firm: </b>{{jsonArray[index].firm}}</div>
+                    <div><b>ESTD: </b>{{jsonArray[index].estd}}</div>
+                    <div><b>Phone: </b>{{jsonArray[index].phone}}</div>
+                    <div><b>Email: </b>{{jsonArray[index].email}}@gmail.com</div>
+                    <div><b>Service: </b>{{jsonArray[index].service}}</div>
+                    <div><b>Other: </b>{{jsonArray[index].other}}</div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+
+</html>

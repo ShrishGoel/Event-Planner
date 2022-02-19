@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="style/bootstrap.min.css" rel="stylesheet">
+    <script src="js/jquery-1.8.2.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <title>Event Planner</title>
+
+    <script>
+        function doChange() {
+            var myCarousel = document.querySelector('#carouselExampleControls')
+            var carousel = new bootstrap.Carousel(myCarousel, {
+                interval: 2000,
+                wrap: false
+            })
+        }
+        $(document).ready(function () {
+            $("#sav").click(function (event) {
+                event.preventDefault();
+                var email = $("#email").val();
+                var password = $("#password").val();
+                var type = $("#typ").val();
+                if (email == "" || password == "" || type == "") {
+                    alert("Please enter all fields.");
+                }
+                else {
+                    $.ajax({
+                        method: 'post',
+                        url: '/signup-save',
+                        data: JSON.stringify({ email: email, password: password, type: type }),
+                        contentType: 'application/json',
+                        success: function (data) {
+                            if (data == "ok") {
+                                if (type == "Client") {
+                                    window.location.replace("dash-client.html");
+                                    localStorage.setItem('email', email);
+                                    ocalStorage.setItem('access', "Client");l
+                                }
+                                else {
+                                    window.location.replace("dash-vendor.html");
+                                    localStorage.setItem('email', email);
+                                    localStorage.setItem('access', "Vendor");
+                                }
+                            }
+                            else {
+                                alert("Profile Already Exists");
+                            }
+                        }
+                    })
+                }
+
+
+            });
+
+            $("#logi").click(function (event) {
+                event.preventDefault();
+                var email = $("#email2").val();
+                var password = $("#password2").val();
+                if (email == "" || password == "") {
+                    alert("Please enter all fields.");
+                }
+                else {
+                    $.ajax({
+                        method: 'post',
+                        url: '/login',
+                        data: JSON.stringify({ email: email, password: password }),
+                        contentType: 'application/json',
+                        success: function (data) {
+                            if (data == "Invalid") {
+                                alert("Invalid User-Id or Password.");
+                            }
+                            else {
+                                if (data == "Client") {
+                                    localStorage.setItem('email', email);
+                                    localStorage.setItem('access', "Client");
+                                    window.location.replace("dash-client.html");
+
+                                }
+                                else if (data == "Admin") {
+                                    localStorage.setItem('email', email);
+                                    localStorage.setItem('access', "Admin");
+                                    window.location.replace("dash-admin.html");
+
+                                }
+                                else {
+                                    localStorage.setItem('email', email);
+                                    localStorage.setItem('access', "Vendor");
+                                    window.location.replace("dash-vendor.html");
+                                }
+
+                            }
+                        }
+                    })
+                }
+            });
+
+        });
+
+        function doImplement(ref) {
+            var des = document.querySelector("#typ");
+            des.value = "";
+            for (var i = 0; i < ref.length; i++) {
+
+                if (ref[i].selected) {
+                    if (ref[i].value == "Select") {
+                        return;
+                    }
+                    if (des.value.length == 0) {
+                        des.value += ref[i].value;
+                    }
+                    else {
+                        des.value += ("," + ref[i].value);
+                    }
+                }
+            }
+
+        };
+
+    </script>
+
+    <style>
+        #dialog-box {
+            width: 500px;
+            height: 400px;
+            background-color: white;
+            position: absolute;
+            box-shadow: 0px 0px 5px 5px gray;
+        }
+
+        #dialog-box2 {
+            width: 500px;
+            height: 350px;
+            background-color: white;
+            position: absolute;
+            float: right;
+            box-shadow: 0px 0px 5px 5px gray;
+        }
+    </style>
+</head>
+
+<body onload="doChange();" style="background-color: black;">
+
+
+    <nav class="navbar navbar-dark bg-dark fixed-top">
+        <a class="navbar-brand" href="#">
+            <img src="pics/events.jpg" class="rounded border border-dark" width="40" height="30" alt="">
+            EventPlanz
+        </a>
+        <!--<form class="form-inline" style="float: right;">
+                <button class="btn btn-outline-success" style="float: left;" id="SignUp" type="button">SignUp
+                <button class="btn btn-outline-success" id="login" type="button">Log-In</button>
+            </form>-->
+        <form class="form-inline">
+            <button class="btn btn-outline-success" type="button" id="SignUp" data-bs-toggle="modal"
+                data-bs-target="#SignUpDialog">SignUp</button>
+            <button class="btn btn-outline-success" id="login" type="button" data-bs-toggle="modal"
+                data-bs-target="#logindialog">Login</button>
+        </form>
+    </nav>
+    <div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-indicators">
+            <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active"
+                aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1"
+                aria-label="Slide 2"></button>
+            <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="2"
+                aria-label="Slide 3"></button>
+        </div>
+
+
+
+
+        <div id="carouselExampleCaption" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#carouselExampleCaption" data-bs-slide-to="0" class="active"
+                    aria-current="true" aria-label="Slide 1"></button>
+                <button type="button" data-bs-target="#carouselExampleCaption" data-bs-slide-to="1"
+                    aria-label="Slide 2"></button>
+                <button type="button" data-bs-target="#carouselExampleCaption" data-bs-slide-to="2"
+                    aria-label="Slide 3"></button>
+            </div>
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <img src="pics/event12.PNG" class="d-block w-100" alt="..." width="2000px" height="500px">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5 style="color: red; font-size: 20px;">Events</h5>
+                        <p style="color: red; font-size: 20px;">Organize any event.</p>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img src="pics/event10.PNG" class="d-block w-100" alt="..." width="2000px" height="500px">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5 style="color: rgb(214, 218, 11);;"><b>Example of dance party</b></h5>
+                        <p style="color: rgb(214, 218, 11);"><b>We organize many events including dance party's.</b>
+                        </p>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img src="pics/event11.PNG" class="d-block w-100" alt="..." width="2000px" height="500px">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5 style="color: rgb(70, 180, 6);"><b>Supplies</b></h5>
+                        <p style="color: rgb(70, 180, 6);"><b>From supplier to serving, our vendors provide you with
+                                everything.</b>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaption"
+                data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaption"
+                data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+        <div class="container mt-4">
+            <div class="row">
+                <div class="col">
+                    <div class="card" style="width: 18rem;">
+                        <img src="pics/event12.jpg" class="card-img-top" alt="..." width="285px" height="177px">
+                        <div class="card-body">
+                            <h5 class="card-title">Organize Events</h5>
+                            <p class="card-text">Use our program to plan your events. You can book our vendors and they
+                                will deliver the items to your house.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card" style="width: 18rem;">
+                        <img src="pics/event13.jpg" class="card-img-top" alt="..." width="285px" height="177px">
+                        <div class="card-body">
+                            <h5 class="card-title">Birthday Party's</h5>
+                            <p class="card-text">You can use our program to plan many events such as birthday party's.
+                                Our vendors will provide you with everything.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card" style="width: 18rem;">
+                        <img src="pics/event14.jpg" class="card-img-top" alt="..." width="285px" height="177px">
+                        <div class="card-body">
+                            <h5 class="card-title">Manage Events</h5>
+                            <p class="card-text">When you login you can start planning a event and they are really cheap
+                                to organize. If you don't have a account please sign-up.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="SignUpDialog" tabindex="-1" aria-labelledby="signupModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="signupModalLabel">Signup</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST">
+
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col">
+                                    <label class="form-label">Email:</label>
+                                    <div>
+                                        <div class="input-group">
+                                            <input name="email" id="email" type="text" required class="form-control"
+                                                placeholder="Enter your email" aria-label="Recipient's username"
+                                                aria-describedby="basic-addon2">
+                                            <span class="input-group-text" id="basic-addon2">@gmail.com </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mt-4">
+                                <div class="col">
+                                    <label class="form-label">Password:</label>
+                                    <input type="password" class="form-control" id="password" name="password" required>
+                                </div>
+                            </div>
+
+                            <div class="row mt-4">
+                                <div class="col">
+                                    <label class="form-label">Type:</label>
+                                    <select class="form-control" id="type" name="type" onchange="doImplement(this);">
+                                        <option value="Select">Select</option>
+                                        <option value="Client">Client</option>
+                                        <option value="Vendor">Vendor</option>
+                                    </select>
+                                    <input type="hidden" name="typ" id="typ">
+                                </div>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" value="Save" name="save" id="sav"
+                        style="margin-right: 20px;">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="logindialog" tabindex="-1" aria-labelledby="logindialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Login Here</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST">
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col">
+                                    <label class="form-label">Email:</label>
+                                    <div>
+                                        <div class="input-group">
+                                            <input name="email2" id="email2" type="text" required class="form-control"
+                                                placeholder="Enter your email" aria-label="Recipient's username"
+                                                aria-describedby="basic-addon2">
+                                            <span class="input-group-text" id="basic-addon2">@gmail.com </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mt-4">
+                                <div class="col">
+                                    <label class="form-label">Password:</label>
+                                    <input type="password" class="form-control" id="password2" name="password2">
+                                </div>
+                            </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" name="login" value="login" id="logi"
+                        style="margin-right: 20px;">Login</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Panel</title>
+    <link href="style/bootstrap.min.css" rel="stylesheet">
+    <script src="js/jquery-1.8.2.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/angular.min.js"></script>
+    <style>
+        #dialog-box {
+            width: 1000px;
+            height: 800px;
+            background-color: white;
+            position: absolute;
+            box-shadow: 0px 0px 5px 5px gray;
+            align-items: center;
+        }
+
+        .title {
+            background-image: url(pics/background2.jpg);
+            background-size: cover;
+            background-repeat: no-repeat;
+            width: 100vw;
+            height: 100vh;
+        }
+    </style>
+    <script>
+        $(document).ready(function () {
+            $("#deleete").click(function () {
+                $("#detailsModal").modal('hide');
+            });
+
+        });
+        var module = angular.module("modmod", []);
+        module.controller("mod", function ($scope, $http) {
+
+            $scope.jsonArray = [];
+
+            $scope.doFetchAll = function () {
+                $http.get("/fetch-clients").then(fxOk, fxNotOk);
+
+                function fxOk(response) {
+                    $scope.jsonArray = response.data;
+                }
+
+                function fxNotOk(response) {
+                    alert("An Error occured. Please try again later.");
+
+                }
+
+            };
+
+            $scope.doDelete = function (userid, pic, email) {
+                if (confirm("Are you sure you want to delete userid " + userid + "?")) {
+                    var data = { userid: userid, pic: pic, email: email };
+                    $http({
+                        url: "/client-user-del",
+                        method: "POST",
+                        params: data
+                    }).then(fxOk, fxNotOk);
+
+                    function fxOk(response) {
+                        $scope.jsonArray = response.data;
+                        alert("Record Deleted Successfully!");
+                    }
+
+                    function fxNotOk(response) {
+                        alert("An error occurred.");
+                    }
+                }
+            };
+            $scope.showFullDetails = function (index) {
+                $scope.index = index;
+            };
+        });
+        function check() {
+            if (localStorage.getItem('access') != "Admin") {
+                window.location.replace("/");
+            }
+        }
+    </script>
+</head>
+
+<body ng-app="modmod" ng-controller="mod" class="title" onload="check();">
+    <nav class="navbar navbar-light bg-light fixed-top">
+        <a class="navbar-brand" href="index.html">
+            <img src="pics/events.jpg" class="rounded float-left border border-dark" style="margin-left: 10px;"
+                width="40" height="30" alt="">
+            EventPlanz-ClientPanel
+        </a>
+    </nav>
+    <center>
+        <button type="button" class="btn btn-primary" style="margin-top: 80px;" id="show" ng-click="doFetchAll();">Show
+            All Clients</button>
+        <a href="dash-admin.html" class="btn btn-primary" style="margin-top: 80px;">Back</a>
+    </center>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col md-3" ng-repeat="obj in jsonArray">
+                <div class="card" style="width: 250px;">
+                    <img src="uploads/{{obj.pic}}" class="card-img-top" alt="..." width="60px" height="60px">
+                    <div class="card-body">
+                        <h5 class="card-title"><b>{{$index}}</b></h5>
+                        <p class="card-text"><b>Userid: </b>{{obj.userid}}</p>
+                        <p class="card-text"><b>Email: </b>{{obj.email}}@gmail.com</p>
+                        <p class="card-text"><b>Name: </b>{{obj.name}}</p>
+                        <a href="#" class="btn btn-primary" ng-click="showFullDetails($index);" data-bs-toggle="modal"
+                            data-bs-target="#detailsModal">Show Details</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div><b>Userid: </b>{{jsonArray[index].userid}}</div>
+                    <div><b>Email: </b>{{jsonArray[index].email}}@gmail.com</div>
+                    <div><b>Pic: </b><img src="uploads/{{jsonArray[index].pic}}" width="60px" height="60px"></div>
+                    <div><b>Name: </b>{{jsonArray[index].name}}</div>
+                    <div><b>Contact: </b>{{jsonArray[index].contact}}</div>
+                    <div><b>Address: </b>{{jsonArray[index].address}}</div>
+                    <div><b>City: </b>{{jsonArray[index].city}}</div>
+                    <span>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <input type="button" value="Delete" class="btn btn-primary" id="deleete"
+                        ng-click="doDelete(jsonArray[index].userid,jsonArray[index].pic,jsonArray[index].email);">
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
