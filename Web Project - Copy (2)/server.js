@@ -22,8 +22,15 @@ dbcon.connect(function (err) {
     }
 });
 let alert = require('alert');
-app.use(express.static("public"));
-
+//app.use(express.static("public"));
+const express = require('express')
+const PORT = process.env.PORT
+express()
+  .use(express.static(path.join(__dirname, 'public')))
+  .set('views', path.join(__dirname, 'views'))
+  .set('view engine', 'ejs')
+  .get('/', (req, res) => res.render('pages/index'))
+  .listen(PORT, () => console.log(`Listening on ${ PORT }`))
 var nodemailer = require('nodemailer');
 
 var transporter = nodemailer.createTransport({
@@ -34,9 +41,9 @@ var transporter = nodemailer.createTransport({
     }
 });
 
-app.listen(3000, function () {
-    console.log("Server Started");
-});
+//app.listen(3000, function () {
+    //console.log("Server Started");
+//});
 
 
 var access = false;
