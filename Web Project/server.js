@@ -30,7 +30,7 @@ var transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
         user: 'shrishgoel001@gmail.com',
-        pass: 'dWUGwTTMb7DcYA'
+        pass: 
     }
 });
 const PORT = process.env.PORT || 5000
