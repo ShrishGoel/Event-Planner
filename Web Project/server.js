@@ -8,8 +8,9 @@ var fileup = require("express-fileupload");
 app.use(fileup());
 const sqlU = CLOUDFLARE_ENV.DB_USERNAME;
 const sqlP = CLOUDFLARE_ENV.DB_PASSWORD;
+const sqlH = CLOUDFLARE_ENV.DB_HOST;
 var dbConfigObj = {
-    host: "localhost",
+    host: sqlH,
     user: sqlU,
     password: sqlP,
     database: "web project - event planner"
