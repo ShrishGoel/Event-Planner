@@ -25,12 +25,13 @@ let alert = require('alert');
 app.use(express.static("public"));
 
 var nodemailer = require('nodemailer');
-
+const userE = CLOUDFLARE_ENV.EMAIL_USER;
+const passE = CLOUDFLARE_ENV.EMAIL_PASS;
 var transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'shrishgoel001@gmail.com',
-        pass: 
+        user: userE,
+        pass: passE
     }
 });
 const PORT = process.env.PORT || 5000
