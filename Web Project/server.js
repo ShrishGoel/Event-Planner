@@ -6,10 +6,12 @@ var mySql = require("mysql");
 app.use(express.urlencoded({ extended: true }));
 var fileup = require("express-fileupload");
 app.use(fileup());
+const sqlU = CLOUDFLARE_ENV.EMAIL_USER;
+const sqlP = CLOUDFLARE_ENV.EMAIL_USER;
 var dbConfigObj = {
     host: "localhost",
-    user: "root",
-    password: "",
+    user: sqlU,
+    password: sqlP,
     database: "web project - event planner"
 }
 var dbcon = mySql.createConnection(dbConfigObj);
