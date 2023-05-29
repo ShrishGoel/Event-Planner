@@ -6,13 +6,10 @@ var mySql = require("mysql");
 app.use(express.urlencoded({ extended: true }));
 var fileup = require("express-fileupload");
 app.use(fileup());
-const sqlU = CLOUDFLARE_ENV.DB_USERNAME;
-const sqlP = CLOUDFLARE_ENV.DB_PASSWORD;
-const sqlH = CLOUDFLARE_ENV.DB_HOST;
 var dbConfigObj = {
-    host: sqlH,
-    user: sqlU,
-    password: sqlP,
+    host: process.env.DB_HOST,
+    user: process.env.DB_USERNAME,
+    password: process.env.DB_PASSWORD,
     database: "web project - event planner"
 }
 var dbcon = mySql.createConnection(dbConfigObj);
@@ -28,13 +25,12 @@ let alert = require('alert');
 app.use(express.static("public"));
 
 var nodemailer = require('nodemailer');
-const userE = CLOUDFLARE_ENV.EMAIL_USER;
-const passE = CLOUDFLARE_ENV.EMAIL_PASS;
+
 var transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: userE,
-        pass: passE
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
     }
 });
 const PORT = process.env.PORT || 5000
